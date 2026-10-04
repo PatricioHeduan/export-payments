@@ -6,10 +6,10 @@ pipeline {
         GOOGLE_SPREADSHEET_ID = credentials('PATS_GOOGLE_SPREADSHEET_ID')
         DOCKER_TAG = 'export-payments-pats'
         EXTERNAL_PORT = '8901'
-        CRON_SCHEDULE="*/5 * * * *"
+        CRON_SCHEDULE = '*/5 * * * *'
         MP_ACCESS_TOKEN = credentials('PATS_MP_ACCESS_TOKEN')
-        MP_FETCH_LIMIT=100
-        MP_BASE_URL="https://api.mercadopago.com"
+        MP_FETCH_LIMIT = '100'
+        MP_BASE_URL = 'https://api.mercadopago.com'
     }
     stages {
         stage('Build') {
@@ -21,20 +21,20 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Stopping previous version...'
-                sh 'docker stop $DOCKER_TAG || echo No hay nada que detener'
-                sh 'docker rm $DOCKER_TAG || echo No hay nada que eliminar'
+                sh 'docker stop $DOCKER_TAG || echo "No hay nada que detener"'
+                sh 'docker rm -f $DOCKER_TAG || echo "No hay nada que eliminar"'
                 echo 'Deploying....'
-                sh 'docker run -d 
-                    -e PORT=$PORT \
-                    -e GOOGLE_CREDENTIALS_JSON=$GOOGLE_CREDENTIALS_JSON \
-                    -e MP_BASE_URL=$MP_BASE_URL \
-                    -e CRON_SCHEDULE=$CRON_SCHEDULE \
-                    -e MP_FETCH_LIMIT=$MP_FETCH_LIMIT \
-                    -e GOOGLE_SPREADSHEET_ID=$GOOGLE_SPREADSHEET_ID \
-                    -e MP_ACCESS_TOKEN=$MP_ACCESS_TOKEN 
-                    -p $EXTERNAL_PORT:8080 
-                    --name $DOCKER_TAG 
-                    $DOCKER_TAG'
+                sh '''docker run -d \
+                    -e PORT \
+                    -e GOOGLE_CREDENTIALS_JSON \
+                    -e GOOGLE_SPREADSHEET_ID \
+                    -e CRON_SCHEDULE \
+                    -e MP_ACCESS_TOKEN \
+                    -e MP_FETCH_LIMIT \
+                    -e MP_BASE_URL \
+                    -p ${EXTERNAL_PORT}:8080 \
+                    --name ${DOCKER_TAG} \
+                    ${DOCKER_TAG}'''
             }
         }
     }
