@@ -3,7 +3,6 @@ pipeline {
     environment {
         PORT = '8080'
         GOOGLE_CREDENTIALS = credentials('PATS_GOOGLE_CREDENTIALS')
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('PATS_GOOGLE_APPLICATION_CREDENTIALS')
         GOOGLE_SPREADSHEET_ID = credentials('PATS_GOOGLE_SPREADSHEET_ID')
         MP_ACCESS_TOKEN = credentials('PATS_MP_ACCESS_TOKEN')
         DOCKER_TAG = 'export-payments-pats'
