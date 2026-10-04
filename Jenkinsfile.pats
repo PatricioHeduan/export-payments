@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    environment {
+        PORT = '8080'
+        GOOGLE_CREDENTIALS = credentials('PATS_GOOGLE_CREDENTIALS')
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('PATS_GOOGLE_APPLICATION_CREDENTIALS')
+        GOOGLE_SPREADSHEET_ID = credentials('PATS_GOOGLE_SPREADSHEET_ID')
+        MP_ACCESS_TOKEN = credentials('PATS_MP_ACCESS_TOKEN')
+        DOCKER_TAG = 'export-payments-pats'
+        EXTERNAL_PORT = '8901'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
+                sh 'docker build -t $DOCKER_TAG .'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Stopping previous version...'
+                sh 'docker stop $DOCKER_TAG || echo No hay nada que detener'
+                sh 'docker rm $DOCKER_TAG || echo No hay nada que eliminar'
+                echo 'Deploying....'
+                sh 'docker run -d -e PORT -p $EXTERNAL_PORT:8080 --name $DOCKER_TAG $DOCKER_TAG'
+            }
+        }
+    }
+}
